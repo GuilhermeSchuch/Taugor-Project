@@ -20,16 +20,20 @@ import { auth } from "./config/firebase";
 import {
   Auth,
   Employee,
+  Home,
 } from "./pages";
 
-const cookies = new Cookies();
+const cookies = new Cookies()
+
+const authToken = cookies.get("token");
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={auth.currentUser ? <Employee /> : <Auth />} />
+          <Route path="/" element={authToken ? <Home /> : <Auth />} />
+          <Route path="/employee" element={authToken ? <Employee /> : <Auth />} />
         </Routes>
       </BrowserRouter>
       <ToastContainer limit={5} />

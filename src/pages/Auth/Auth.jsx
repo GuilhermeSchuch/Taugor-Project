@@ -10,11 +10,16 @@ import InputLabel from '@mui/material/InputLabel';
 import { auth } from "../../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
+// Cookies
+import Cookies from "universal-cookie";
+
 // Notification
 import Notification from "../../components/Notification/Notification";
 
 // Hooks
 import { useState } from "react";
+
+const cookies = new Cookies();
 
 const Auth = () => {
   const [user, setUser] = useState({
@@ -28,7 +33,11 @@ const Auth = () => {
 
   const handleSignIn = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, user.email, user.password)
+      await createUserWithEmailAndPassword(auth, user.email, user.password);
+  
+      cookies.set("token", auth.currentUser.accessToken);
+      window.location.reload();
+
     } catch (error) {
       let text;
       console.log(error.code);

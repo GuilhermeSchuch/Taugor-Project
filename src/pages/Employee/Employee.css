@@ -27,6 +27,7 @@
   border: 1px solid purple;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .firstSectionImgContainer {
@@ -76,4 +77,11 @@
 .thirdSectionInputGroup {
   display: flex;
   justify-content: space-between;
+}
+
+.stepButtons {
+  border: 1px solid rebeccapurple;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
 }
