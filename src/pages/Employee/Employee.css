@@ -1,0 +1,79 @@
+.authContainer {
+  border: 1px solid blue;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 900px;
+}
+
+.title {
+  border: 1px solid salmon;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.title h1{
+  font-size: 24px;
+  font-weight: normal;
+}
+
+.firstSection {
+  border: 1px solid brown;
+  display: flex;
+}
+
+.firstSectionInputs {
+  border: 1px solid purple;
+  display: flex;
+  flex-direction: column;
+}
+
+.firstSectionImgContainer {
+  border: 1px solid palevioletred;
+  display: flex;
+}
+
+.image {
+  border: 1px solid gold;
+  width: 100px;
+  height: 100%;
+}
+
+.pictureOptions {
+  border: 1px solid aqua;
+}
+
+.labelContainer {
+  border: 1px solid greenyellow;  
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.pictureOptions label:hover {
+  opacity: .7;
+}
+
+#imgUplaod {
+  display: none;
+}
+
+.secondSectionInputs {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.thirdSection {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.thirdSectionInputGroup {
+  display: flex;
+  justify-content: space-between;
+}

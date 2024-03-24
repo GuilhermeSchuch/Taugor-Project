@@ -13,26 +13,26 @@ import config from "./config/config";
 // Notifications
 import { ToastContainer } from 'react-toastify';
 
+// Firebase
+import { auth } from "./config/firebase";
+
 // Pages
 import {
   Auth,
+  Employee,
 } from "./pages";
 
 const cookies = new Cookies();
-const authToken = cookies.get("token");
-
-if(authToken) {
-  
-}
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={!authToken ? <Auth /> : ''} />
+          <Route path="/" element={auth.currentUser ? <Employee /> : <Auth />} />
         </Routes>
       </BrowserRouter>
+      <ToastContainer limit={5} />
     </div>
   );
 }
