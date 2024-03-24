@@ -28,13 +28,22 @@ var _ = require('lodash');
 const Employee = () => {
   const [name, setName] = useState('');
   const [stepCounter, setStepCounter] = useState(1);
+  const [languages, setLanguages] = useState('');
+  const [skills, setSkills] = useState('');
   const [experiences, setExperiences] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [experience, setExperience] = useState({
     id: '',
     date: '',
     position: '',
     location: '',
     aboutPosition: ''
+  });
+  const [course, setCourse] = useState({
+    id: '',
+    dateEducation: '',
+    course: '',
+    locationEducation: ''
   });
 
   const handleExperience = (e) => {
@@ -57,8 +66,31 @@ const Employee = () => {
     }
   }
 
-  const deleteExperiente = (id) => {
+  const deleteExperience = (id) => {
     setExperiences(experiences.filter((experience) => experience.id != id));
+  }
+
+  const handleCourse = (e) => {
+    setCourse({ ...course, [e.target.name]: e.target.value, id: _.uniqueId() });
+  }
+
+  const handleCourses = (e) => {
+    if(course.dateEducation !== '' && course.course !== '' && course.locationEducation !== '') {
+      setCourses([...courses, course]);
+      setCourse({
+        id: '',
+        dateEducation: '',
+        course: '',
+        locationEducation: '',
+      });
+    }
+    else {
+      Notification({text: "Ausência de dados para inclusão de educação", type: "error"})
+    }
+  }
+
+  const deleteCourse = (id) => {
+    setCourses(courses.filter((course) => course.id != id));
   }
 
   return (
@@ -68,7 +100,7 @@ const Employee = () => {
 
       <div className="title">
         <h1>
-          {stepCounter <= 3 && "Informação de contato"}
+          {stepCounter <= 3 ? "Informação de contato" : "Informação do funcionário"}
         </h1>
         <EditIcon fontSize="small"/>
       </div>
@@ -245,11 +277,86 @@ const Employee = () => {
               {experiences.map((experience) => (
                 <p
                   key={experience.id}
-                  onClick={() => deleteExperiente(experience.id)}
+                  onClick={() => deleteExperience(experience.id)}
                 >
                   { experience.position } - { experience.location }
                 </p>
               ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {stepCounter === 3 && (
+        <>
+          <div className="thirdSection">
+            <h3>Educação</h3>
+
+            <div className="thirdSectionInputGroup">
+              <TextField
+                id="dateEducation"
+                name="dateEducation"
+                label="Data"
+                helperText="ex: Jun 2010 - Mar 2017"
+                value={course.dateEducation}
+                onChange={handleCourse}
+              />
+
+              <TextField
+                id="course"
+                name="course"
+                label="Curso ou Grau"
+                helperText="ex: Sistemas de Informação"
+                value={course.course}
+                onChange={handleCourse}
+              />
+            </div>
+
+            <div className="thirdSectionInputGroup">
+              <TextField
+                id="locationEducation"
+                name="locationEducation"
+                label="Local"
+                helperText="ex: Taugor - Novo Hamburgo, Brasil"
+                sx={{ width: "100%"}}
+                value={course.locationEducation}
+                onChange={handleCourse}
+              />
+            </div>
+
+            <Button color="info" variant="outlined" size="medium" onClick={handleCourses}>
+              Adicionar Escolaridade
+            </Button>
+
+            <div className="coursesContainer">
+              {courses.map((course) => (
+                <p
+                  key={course.id}
+                  onClick={() => deleteCourse(course.id)}
+                >
+                  { course.course } - { course.locationEducation }
+                </p>
+              ))}
+            </div>
+          </div>
+
+          <div className="secondSection">
+            <div className="secondSectionInputs">
+              <TextField
+                id="language"
+                label="Idiomas"
+                value={languages}
+                onChange={(e) => setLanguages(e.target.value)}
+                helperText="ex: Inglês - Avançado, Espanhol - Intermediário, Português - Nativo"
+              />
+
+              <TextField
+                id="skills"
+                label="Habilidades"
+                value={skills}
+                onChange={(e) => setSkills(e.target.value)}
+                helperText="ex: NodeJs, Proativo, ReactJs"
+              />
             </div>
           </div>
         </>
