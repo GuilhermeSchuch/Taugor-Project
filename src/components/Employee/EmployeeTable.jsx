@@ -17,14 +17,11 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 // Hooks
 import { useState } from 'react';
 
-const createData = (name, calories, fat, carbs, protein, price) => {
+const createData = (name, lastname, email, position) => {
   return {
     name,
-    calories,
-    fat,
-    carbs,
-    protein,
-    price,
+    lastname,
+    position,
     history: [
       {
         date: '2020-01-05',
@@ -47,6 +44,12 @@ const Row = (props) => {
   return (
     <>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+        <TableCell component="th" scope="row">
+          {`${row.name} ${row.lastname}`}
+        </TableCell>
+        <TableCell align="right">{row.email}</TableCell>
+        <TableCell align="right">{row.position}</TableCell>
+
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -56,13 +59,6 @@ const Row = (props) => {
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell component="th" scope="row">
-          {row.name}
-        </TableCell>
-        <TableCell align="right">{row.calories}</TableCell>
-        <TableCell align="right">{row.fat}</TableCell>
-        <TableCell align="right">{row.carbs}</TableCell>
-        <TableCell align="right">{row.protein}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -81,7 +77,7 @@ const Row = (props) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.history.map((historyRow) => (
+                  {/* {row.history.map((historyRow) => (
                     <TableRow key={historyRow.date}>
                       <TableCell component="th" scope="row">
                         {historyRow.date}
@@ -92,7 +88,7 @@ const Row = (props) => {
                         {Math.round(historyRow.amount * row.price * 100) / 100}
                       </TableCell>
                     </TableRow>
-                  ))}
+                  ))} */}
                 </TableBody>
               </Table>
             </Box>
@@ -105,9 +101,10 @@ const Row = (props) => {
 
 Row.propTypes = {
   row: PropTypes.shape({
-    calories: PropTypes.number.isRequired,
-    carbs: PropTypes.number.isRequired,
-    fat: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    lastname: PropTypes.string.isRequired,
+    position: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
     history: PropTypes.arrayOf(
       PropTypes.shape({
         amount: PropTypes.number.isRequired,
@@ -115,37 +112,24 @@ Row.propTypes = {
         date: PropTypes.string.isRequired,
       }),
     ).isRequired,
-    name: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-    protein: PropTypes.number.isRequired,
   }).isRequired,
 };
 
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0, 3.99),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3, 4.99),
-  createData('Eclair', 262, 16.0, 24, 6.0, 3.79),
-  createData('Cupcake', 305, 3.7, 67, 4.3, 2.5),
-  createData('Gingerbread', 356, 16.0, 49, 3.9, 1.5),
-];
-
-const EmployeeTable = () => {
+const EmployeeTable = ({ data }) => {
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
+            <TableCell sx={{fontWeight: "700"}}>Nome</TableCell>
+            <TableCell sx={{fontWeight: "700"}}>E-mail</TableCell>
+            <TableCell sx={{fontWeight: "700"}}>Cargo</TableCell>
             <TableCell />
-            <TableCell>Dessert (100g serving)</TableCell>
-            <TableCell align="right">Calories</TableCell>
-            <TableCell align="right">Fat&nbsp;(g)</TableCell>
-            <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-            <TableCell align="right">Protein&nbsp;(g)</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
-            <Row key={row.name} row={row} />
+          {data?.map((row) => (
+            <Row key={row.id} row={row} />
           ))}
         </TableBody>
       </Table>

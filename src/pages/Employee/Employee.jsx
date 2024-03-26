@@ -23,13 +23,43 @@ import { useState } from "react";
 // Components
 import Notification from "../../components/Notification/Notification";
 
+// Firebase
+import { db } from "../../config/firebase";
+import { collection, addDoc } from "firebase/firestore";
+
+// Lodash
 var _ = require('lodash');
 
 const Employee = () => {
-  const [name, setName] = useState('');
+  const employeesCollectionRef = collection(db, "employees");
+  
+  const [employee, setEmployee] = useState({
+    name: '',
+    lastname: '',
+    job: '',
+    address: '',
+    email: '',
+    phone: '',
+    nationality: '',
+    birthday: '',
+    about: '',
+    languages: '',
+    skills: '',
+    position: '',
+    dateAdmission: '',
+    sector: '',
+    salary: '',
+    sex: '',
+  })
+
+  const handleEmployee = (e) => {
+    setEmployee({ ...employee, [e.target.name]: e.target.value });
+  }
+
+  console.log(employee);
+
   const [stepCounter, setStepCounter] = useState(1);
-  const [languages, setLanguages] = useState('');
-  const [skills, setSkills] = useState('');
+
   const [experiences, setExperiences] = useState([]);
   const [courses, setCourses] = useState([]);
   const [experience, setExperience] = useState({
@@ -93,10 +123,40 @@ const Employee = () => {
     setCourses(courses.filter((course) => course.id != id));
   }
 
+  const handleSex = (e) => {
+    
+  }
+
+  const createEmplyee = async () => {
+    try {
+      await addDoc(employeesCollectionRef, {
+        about: employee.about,
+        address: employee.address,
+        birthday: employee.birthday,
+        dateAdmission: employee.dateAdmission,
+        education: courses,
+        email: employee.email,
+        experiences: experiences,
+        job: employee.job,
+        languages: employee.languages,
+        lastname: employee.lastname,
+        name: employee.name,
+        nationality: employee.nationality,
+        phone: employee.phone,
+        position: employee.position,
+        salary: employee.salary,
+        sector: employee.sector,
+        sex: employee.sex
+      });
+    } catch (error) {
+      Notification({ text: "Algo deu errado, tente novamente", type: "error" });
+    }
+  }
+
   return (
     <div className="authContainer">
 
-      <p>{stepCounter}</p>
+      <p>{stepCounter}/4</p>
 
       <div className="title">
         <h1>
@@ -111,16 +171,20 @@ const Employee = () => {
             <div className="firstSectionInputs">
               <TextField
                 id="name"
+                name="name"
                 label="Nome"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={employee.name}
+                onChange={handleEmployee}
                 helperText="ex: Tiago"
               />
 
               <TextField
                 id="lastname"
+                name="lastname"
                 label="Sobrenome"
                 helperText="ex: Souza"
+                value={employee.lastname}
+                onChange={handleEmployee}
               />
             </div>
 
@@ -146,21 +210,30 @@ const Employee = () => {
             <div className="secondSectionInputs">
               <TextField
                 id="job"
+                name="job"
                 label="Emprego"
                 helperText="ex: Vendedor"
+                value={employee.job}
+                onChange={handleEmployee}
               />
 
               <TextField
                 id="address"
+                name="address"
                 label="Endereço"
                 helperText="ex: Avenida Paulista, 1234 - São Paulo - SP - 07010 001"
+                value={employee.address}
+                onChange={handleEmployee}
               />
 
               <TextField
                 id="email"
+                name="email"
                 label="E-mail"
                 helperText="ex: tiago.souza@email.com"
                 type="email"
+                value={employee.email}
+                onChange={handleEmployee}
               />
             </div>
           </div>
@@ -169,38 +242,58 @@ const Employee = () => {
             <div className="thirdSectionInputGroup">
               <TextField
                 id="phone"
+                name="phone"
                 label="Telefone"
                 helperText="ex: (11) 9 9123-7676"
+                value={employee.phone}
+                onChange={handleEmployee}
               />
 
               <FormControl sx={{ width: "223px" }}>
                 <InputLabel id="sexLabel">Sexo</InputLabel>
 
                 <Select
+                  id="sex"
+                  name="sex"
                   labelId="sexLabel"
-                  id="sexSelector"
                   label="Sexo"
+                  value={employee.sex}
+                  onChange={handleSex}
                 >
-                  <MenuItem value={"M"}>Masculino</MenuItem>
-                  <MenuItem value={"F"}>Feminino</MenuItem>
-                  <MenuItem value={"O"}>Outro</MenuItem>
+                  <MenuItem value={"Masculino"}>Masculino</MenuItem>
+                  <MenuItem value={"Feminino"}>Feminino</MenuItem>
+                  
 
-                  {/* if value equal 'o' open input */}
+                  <TextField
+                    id="otherSex"
+                    name="sex"
+                    label="Outro"
+                    value={employee.sex}
+                    onChange={handleSex}
+                  />
                 </Select>
+
+                
               </FormControl>
             </div>
 
             <div className="thirdSectionInputGroup">
               <TextField
                 id="nationality"
+                name="nationality"
                 label="Nacionalidade"
                 helperText="ex: Brasileira"
+                value={employee.nationality}
+                onChange={handleEmployee}
               />
 
               <TextField
                 id="birthday"
+                name="birthday"
                 label="Data de Nascimento"
                 helperText="ex: 23 jun 1985"
+                value={employee.birthday}
+                onChange={handleEmployee}
               />
             </div>
           </div>
@@ -213,11 +306,14 @@ const Employee = () => {
             <div className="firstSectionInputs">
               <TextField
                 id="about"
+                name="about"
                 label="Sobre"
                 helperText="Breve resumo sobre o funcionário"
                 multiline
                 maxRows={4}
                 sx={{width: "100%"}}
+                value={employee.about}
+                onChange={handleEmployee}
               />
             </div>
           </div>
@@ -289,6 +385,28 @@ const Employee = () => {
 
       {stepCounter === 3 && (
         <>
+          <div className="secondSection">
+            <div className="secondSectionInputs">
+              <TextField
+                id="languages"
+                name="languages"
+                label="Idiomas"
+                value={employee.languages}
+                onChange={handleEmployee}
+                helperText="ex: Inglês - Avançado, Espanhol - Intermediário, Português - Nativo"
+              />
+
+              <TextField
+                id="skills"
+                name="skills"
+                label="Habilidades"
+                value={employee.skills}
+                onChange={handleEmployee}
+                helperText="ex: NodeJs, Proativo, ReactJs"
+              />
+            </div>
+          </div>
+
           <div className="thirdSection">
             <h3>Educação</h3>
 
@@ -339,23 +457,47 @@ const Employee = () => {
               ))}
             </div>
           </div>
+        </>
+      )}
 
+      {stepCounter === 4 && (
+        <>
           <div className="secondSection">
             <div className="secondSectionInputs">
               <TextField
-                id="language"
-                label="Idiomas"
-                value={languages}
-                onChange={(e) => setLanguages(e.target.value)}
-                helperText="ex: Inglês - Avançado, Espanhol - Intermediário, Português - Nativo"
+                id="position"
+                name="position"
+                label="Cargo"
+                value={employee.position}
+                onChange={handleEmployee}
+                helperText="ex: Vendedor"
               />
 
               <TextField
-                id="skills"
-                label="Habilidades"
-                value={skills}
-                onChange={(e) => setSkills(e.target.value)}
-                helperText="ex: NodeJs, Proativo, ReactJs"
+                id="dateAdmission"
+                name="dateAdmission"
+                label="Data de Admissão"
+                helperText="ex: Jun 2024"
+                value={employee.dateAdmission}
+                onChange={handleEmployee}
+              />
+
+              <TextField
+                id="sector"
+                name="sector"
+                label="Setor"
+                helperText="ex: Suporte"
+                value={employee.sector}
+                onChange={handleEmployee}
+              />
+
+              <TextField
+                id="salary"
+                name="salary"
+                label="Salário (mensal)"
+                helperText="ex: 1600"
+                value={employee.salary}
+                onChange={handleEmployee}
               />
             </div>
           </div>
@@ -376,10 +518,10 @@ const Employee = () => {
         <Button
           variant="contained"
           size="medium"
-          endIcon={<ArrowForwardIcon />}
-          onClick={() => setStepCounter(stepCounter + 1)}
+          endIcon={stepCounter < 4 && <ArrowForwardIcon />}
+          onClick={() => stepCounter < 4 ? setStepCounter(stepCounter + 1) : createEmplyee()}
         >
-          Próximo
+          { stepCounter < 4 ? "Próximo" : "Finalizar" }
         </Button>
       </div>
     </div>
