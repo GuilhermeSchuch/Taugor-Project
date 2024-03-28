@@ -1,45 +1,64 @@
 // Material Ui
 import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
+
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import FilePresentIcon from '@mui/icons-material/FilePresent';
+
+import {
+  Box,
+  Collapse,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  Paper,
+  Typography,
+  TableRow,
+  TableHead,
+  IconButton
+} from "@mui/material";
 
 // Hooks
 import { useState } from 'react';
 
-const createData = (name, lastname, email, position) => {
-  return {
-    name,
-    lastname,
-    position,
-    history: [
-      {
-        date: '2020-01-05',
-        customerId: '11091700',
-        amount: 3,
-      },
-      {
-        date: '2020-01-02',
-        customerId: 'Anonymous',
-        amount: 1,
-      },
-    ],
-  };
-}
+// Components
+import Loading from '../Loading/Loading';
+
+// Notification
+import Notification from '../Notification/Notification';
+
+// Firebase
+import { storage } from "../../config/firebase";
+import { ref, listAll, getDownloadURL } from "firebase/storage";
 
 const Row = (props) => {
   const { row } = props;
   const [open, setOpen] = useState(false);
+  const [employeeCvs, setEmployeeCvs] = useState('');
+
+  const handleDownloadCv = async (employeeId) => {
+    try {
+      listAll(ref(storage, `${employeeId}/`)).then((cvs) => {
+        setEmployeeCvs(cvs.items);
+
+        getDownloadURL(ref(storage, `${employeeId}/${cvs.items.pop().name}`)).then((url) => {
+          window.open(url);
+        }).catch((error) => {
+          console.log(error);
+          Notification({ text: "Algo deu errado...", type: "error" });
+        })
+
+      }).catch((error) => {
+        console.log(error);
+        Notification({ text: "Algo deu errado...", type: "error" });
+      })
+    
+    } catch (error) {
+      console.log(error);
+      Notification({ text: "Algo deu errado...", type: "error" });
+    }
+  }
 
   return (
     <>
@@ -49,7 +68,9 @@ const Row = (props) => {
         </TableCell>
         <TableCell align="right">{row.email}</TableCell>
         <TableCell align="right">{row.position}</TableCell>
-        <TableCell />
+        <TableCell align="center">
+          <button className="clearButton" onClick={() => handleDownloadCv(row.employeeId)}><FilePresentIcon /></button>
+        </TableCell>
 
         <TableCell>
           <IconButton
@@ -101,6 +122,7 @@ const Row = (props) => {
 
 Row.propTypes = {
   row: PropTypes.shape({
+    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     lastname: PropTypes.string.isRequired,
     position: PropTypes.string.isRequired,
@@ -117,7 +139,7 @@ Row.propTypes = {
 
 const EmployeeTable = ({ data }) => {
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} sx={{ marginY: "30px" }}>
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>

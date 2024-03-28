@@ -27,8 +27,15 @@ import Notification from "../../components/Notification/Notification";
 import Header from "../../components/Header/Header";
 
 // Firebase
-import { db } from "../../config/firebase";
+import { db, storage } from "../../config/firebase";
 import { collection, addDoc } from "firebase/firestore";
+import { ref, uploadBytes } from "firebase/storage";
+
+// uuid
+import { v4 } from "uuid";
+
+// Axios
+import axios from "axios";
 
 // Lodash
 var _ = require('lodash');
@@ -37,6 +44,7 @@ const Employee = () => {
   const employeesCollectionRef = collection(db, "employees");
   
   const [employee, setEmployee] = useState({
+    employeeId: v4(),
     name: '',
     lastname: '',
     job: '',
@@ -53,14 +61,12 @@ const Employee = () => {
     sector: '',
     salary: '',
     sex: '',
-    history: [],
+    history: []
   })
 
   const handleEmployee = (e) => {
     setEmployee({ ...employee, [e.target.name]: e.target.value });
   }
-
-  console.log(employee);
 
   const [stepCounter, setStepCounter] = useState(1);
 
@@ -131,6 +137,30 @@ const Employee = () => {
     
   }
 
+  const generatePDF = async (data) => {
+    try {
+      const response = await axios.post(
+        'http://localhost:5000/pdf/generate',
+        { data },
+        { responseType: 'blob' }
+      );
+
+      let date = new Date();
+
+      const pdf = ref(storage, `${employee.id}/${date.getTime()}`);
+
+      uploadBytes(pdf, response.data).then(() => {
+      }).catch((error) => {
+        console.log(error);
+        Notification({ text: "Algo deu errado, tente novamente", type: "error" });
+      })
+
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      Notification({ text: "Algo deu errado, tente novamente", type: "error" });
+    }
+  };
+
   const createEmployee = async () => {
     try {
       await addDoc(employeesCollectionRef, {
@@ -140,6 +170,7 @@ const Employee = () => {
         dateAdmission: employee.dateAdmission,
         education: courses,
         email: employee.email,
+        employeeId: employee.employeeId,
         experiences: experiences,
         job: employee.job,
         languages: employee.languages,
@@ -153,7 +184,10 @@ const Employee = () => {
         sex: employee.sex,
         history: employee.history
       });
+
+      generatePDF({...employee, experiences, education: courses});
     } catch (error) {
+      console.log(error);
       Notification({ text: "Algo deu errado, tente novamente", type: "error" });
     }
   }

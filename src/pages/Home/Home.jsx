@@ -20,8 +20,6 @@ import Notification from "../../components/Notification/Notification";
 import { db } from "../../config/firebase";
 import { collection, getDocs } from "firebase/firestore";
 
-// Axios
-import axios from "axios";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -39,48 +37,26 @@ const Home = () => {
         const data = await getDocs(employeesCollectionRef);
         const filteredData = data.docs.map((doc) => ({...doc.data(), id: doc.id}));
         
-        setEmployees(filteredData.reverse());
+        setEmployees(filteredData.reverse());        
         setIsLoading(false);
       } catch (error) {
+        setIsLoading(false);
         Notification({ text: "Algo deu errado, tente novamente mais tarde", type: "error" })
       }
     }
-
+    
     getEmployees();
   }, [])
 
-  const generatePDF = async () => {
-    try {
-      const response = await axios.post(
-        'http://localhost:5000/pdf/generate',
-        { data: employees[0] },
-        { responseType: 'blob' }
-      );
-      
-      const url = window.URL.createObjectURL(response.data);
-
-      window.open(url);
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    }
-  };
-
   return (
     <div className="homeContainer">
-      {console.log(employees)}
-
       {!isLoading ? <EmployeeTable data={employees} /> : <Loading isLoading={isLoading} /> }
-      
 
       <div className="createEmployee">
-        <Button variant="contained" size="medium" onClick={() => navigate("/employee")}>
+        <Button variant="contained" sx={{ width: "100%" }} size="small" onClick={() => navigate("/employee")}>
           Cadastrar funcionário
         </Button>
       </div>
-
-      <Button variant="contained" size="medium" onClick={generatePDF}>
-        Pdf
-      </Button>
     </div>
   )
 }
