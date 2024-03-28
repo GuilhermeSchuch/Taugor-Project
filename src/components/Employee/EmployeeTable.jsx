@@ -49,6 +49,7 @@ const Row = (props) => {
         </TableCell>
         <TableCell align="right">{row.email}</TableCell>
         <TableCell align="right">{row.position}</TableCell>
+        <TableCell />
 
         <TableCell>
           <IconButton
@@ -65,15 +66,14 @@ const Row = (props) => {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box sx={{ margin: 1 }}>
               <Typography variant="h6" gutterBottom component="div">
-                History
+                Histórico
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Customer</TableCell>
-                    <TableCell align="right">Amount</TableCell>
-                    <TableCell align="right">Total price ($)</TableCell>
+                    <TableCell>Data</TableCell>
+                    <TableCell>Currículo</TableCell>
+                    <TableCell />
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -124,6 +124,7 @@ const EmployeeTable = ({ data }) => {
             <TableCell sx={{fontWeight: "700"}}>Nome</TableCell>
             <TableCell sx={{fontWeight: "700"}}>E-mail</TableCell>
             <TableCell sx={{fontWeight: "700"}}>Cargo</TableCell>
+            <TableCell sx={{fontWeight: "700"}}>Currículo</TableCell>
             <TableCell />
           </TableRow>
         </TableHead>

@@ -1,16 +1,17 @@
 .authContainer {
-  border: 1px solid blue;
   display: flex;
   flex-direction: column;
   justify-content: center;
   max-width: 900px;
+  margin: 30px;
 }
 
 .title {
-  border: 1px solid salmon;
+  /* border: 1px solid salmon; */
   display: flex;
   align-items: center;
   gap: 3px;
+  margin-bottom: 5px;
 }
 
 .title h1{
@@ -19,39 +20,47 @@
 }
 
 .firstSection {
-  border: 1px solid brown;
+  /* border: 1px solid brown; */
   display: flex;
 }
 
 .firstSectionInputs {
-  border: 1px solid purple;
+  /* border: 1px solid purple; */
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
 .firstSectionImgContainer {
-  border: 1px solid palevioletred;
+  /* border: 1px solid palevioletred; */
   display: flex;
 }
 
 .image {
-  border: 1px solid gold;
+  /* border: 1px solid gold; */
   width: 100px;
   height: 100%;
+  border: 1px solid blue;
 }
 
 .pictureOptions {
-  border: 1px solid aqua;
+  /* border: 1px solid aqua; */
+  font-size: 15px !important;
 }
 
 .labelContainer {
-  border: 1px solid greenyellow;  
+  /* border: 1px solid greenyellow;   */
   display: flex;
   align-items: center;
   gap: 3px;
   cursor: pointer;
   transition: .2s;
+}
+
+.pictureOptions label {
+  cursor: pointer;
+  transition: .3s;
+  font-size: 15px !important;
 }
 
 .pictureOptions label:hover {
@@ -80,8 +89,22 @@
 }
 
 .stepButtons {
-  border: 1px solid rebeccapurple;
+  /* border: 1px solid rebeccapurple; */
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
+}
+
+.experienceItem, .courseItem {
+  cursor: pointer;
+  transition: .3s;
+}
+
+.experienceItem:hover, .courseItem:hover {
+  opacity: .7;
+  color: #f44336;
+}
+
+.css-ahj2mt-MuiTypography-root {
+  font-size: 15px !important;
 }
