@@ -12,7 +12,7 @@ const Notification = ({ text, type }) => {
           pauseOnHover: true,
           draggable: false,
           progress: undefined,
-          theme: "dark",
+          theme: "dark"
         })
       )}
 
@@ -25,22 +25,23 @@ const Notification = ({ text, type }) => {
           pauseOnHover: true,
           draggable: false,
           progress: undefined,
-          theme: "dark",
+          theme: "dark"
         })
       )}
 
-      {type === "isOnline" && (
-        toast.error(text, {
+      {type === "info" && (
+        toast.info(text, {
           position: "top-right",
-          autoClose: false,
-          hideProgressBar: true,
+          autoClose: 5000,
+          delay: 2000,
+          hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: false,
           progress: undefined,
-          theme: "dark",
+          theme: "dark"
         })
-      )}
+      )}  
     </>
   )
 }

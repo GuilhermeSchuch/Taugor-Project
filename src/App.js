@@ -13,9 +13,6 @@ import config from "./config/config";
 // Notifications
 import { ToastContainer } from 'react-toastify';
 
-// Firebase
-import { auth } from "./config/firebase";
-
 // Pages
 import {
   Auth,
@@ -34,6 +31,7 @@ function App() {
         <Routes>
           <Route path="/" element={authToken ? <Home /> : <Auth />} />
           <Route path="/employee" element={authToken ? <Employee /> : <Auth />} />
+          <Route path="/employee/:id" element={authToken ? <Employee /> : <Auth />} />
         </Routes>
       </BrowserRouter>
       <ToastContainer limit={5} />

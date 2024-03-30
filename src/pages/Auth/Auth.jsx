@@ -8,7 +8,10 @@ import InputLabel from '@mui/material/InputLabel';
 
 // Firebase
 import { auth } from "../../config/firebase";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+
+// Components
+import { Loading } from "../../components";
 
 // Cookies
 import Cookies from "universal-cookie";
@@ -16,12 +19,20 @@ import Cookies from "universal-cookie";
 // Notification
 import Notification from "../../components/Notification/Notification";
 
+// Redux
+import { useSelector, useDispatch } from "react-redux";
+import { setLoading } from '../../features/loadingSlice';
+
 // Hooks
 import { useState } from "react";
 
 const cookies = new Cookies();
 
 const Auth = () => {
+  const dispatch = useDispatch();
+
+  const { loading } = useSelector((state) => state.loading);
+
   const [user, setUser] = useState({
     email: '',
     password: ''
@@ -33,30 +44,29 @@ const Auth = () => {
 
   const handleSignIn = async () => {
     try {
+      dispatch(setLoading({loading: true}));
+
       await signInWithEmailAndPassword(auth, user.email, user.password);
   
       cookies.set("token", auth.currentUser.accessToken);
       window.location.reload();
 
+      dispatch(setLoading({loading: false}));
     } catch (error) {
+      dispatch(setLoading({loading: false}));
+      
       let text;
       console.log(error.code);
-      // console.log(error.customData);
-      // console.log(error);
-
-      // for (const property in error) {
-      //   console.log(`${property}: ${error[property]}`);
-      // }
-
+      
       switch (error.code) {
         case "auth/invalid-email":
           text = "E-mail inválido!";
           break;
 
-        case "auth/weak-password":
-          text = "A senha deve conter ao menos 6 caracteres!";
+        case "auth/invalid-credential":
+          text = "Senha incorreta!";
           break;
-      
+
         default:
           break;
       }
@@ -67,6 +77,8 @@ const Auth = () => {
 
   return (
     <div className="authContainer">
+      {loading && <Loading isLoading={loading}/>}
+
       <div className="authInputs">        
         <div className="emailInputContainer">
           <InputLabel>E-mail</InputLabel>
@@ -98,7 +110,12 @@ const Auth = () => {
       </div>
 
       <div className="buttonContainer">
-        <Button variant="outlined" size="medium" onClick={handleSignIn}>
+        <Button
+          variant="outlined"
+          size="small"
+          sx={{ width: "100%" }}
+          onClick={handleSignIn}
+        >
           Entrar
         </Button>
       </div>

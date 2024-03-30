@@ -22,12 +22,14 @@
 .firstSection {
   /* border: 1px solid brown; */
   display: flex;
+  margin-bottom: 10px;
 }
 
 .firstSectionInputs {
   /* border: 1px solid purple; */
   display: flex;
   flex-direction: column;
+  gap: 10px;
   width: 100%;
 }
 
@@ -40,7 +42,7 @@
   /* border: 1px solid gold; */
   width: 100px;
   height: 100%;
-  border: 1px solid blue;
+  border: 1px solid #ccc;
 }
 
 .pictureOptions {
@@ -71,28 +73,33 @@
   display: none;
 }
 
+.secondSection {
+  margin-bottom: 10px;
+}
+
 .secondSectionInputs {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 10px;
 }
 
 .thirdSection {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 10px;
 }
 
 .thirdSectionInputGroup {
   display: flex;
   justify-content: space-between;
+  /* border: 1px solid rebeccapurple; */
 }
 
 .stepButtons {
   /* border: 1px solid rebeccapurple; */
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
+  margin: 10px 0 30px;
 }
 
 .experienceItem, .courseItem {
@@ -102,7 +109,7 @@
 
 .experienceItem:hover, .courseItem:hover {
   opacity: .7;
-  color: #f44336;
+  color: #F44336;
 }
 
 .css-ahj2mt-MuiTypography-root {
