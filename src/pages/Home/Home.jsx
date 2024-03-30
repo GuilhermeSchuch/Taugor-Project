@@ -52,8 +52,6 @@ const Home = () => {
     getEmployees();
   }, [])
 
-  console.log(employees);
-
   return (
     <div className="homeContainer">
       {loading && <Loading isLoading={loading}/>}

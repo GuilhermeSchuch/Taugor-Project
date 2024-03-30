@@ -1,0 +1,7 @@
+.deleteEmployee {
+  transition: .3s;
+}
+
+.deleteEmployee:hover {
+  color: #F44336;
+}

@@ -1,6 +1,8 @@
+// CSS
+import "./EmployeeTable.css";
+
 // Material Ui
 import PropTypes from 'prop-types';
-
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import FilePresentIcon from '@mui/icons-material/FilePresent';
@@ -38,8 +40,14 @@ import { setLoading } from '../../features/loadingSlice';
 import Notification from '../Notification/Notification';
 
 // Firebase
-import { storage } from "../../config/firebase";
-import { ref, listAll, getDownloadURL, deleteObject } from "firebase/storage";
+import { storage, db } from "../../config/firebase";
+import {
+  ref,
+  listAll,
+  getDownloadURL,
+  deleteObject,
+} from "firebase/storage";
+import { doc, deleteDoc } from 'firebase/firestore';
 
 const Row = (props) => {
   const { row } = props;
@@ -99,23 +107,69 @@ const Row = (props) => {
   }
 
   const handleCvDelete = (employeeId, employeeCv) => {
-    const cvRef = ref(storage, `${employeeId}/${employeeCv}`);
+    dispatch(setLoading({loading: true}));
 
-    deleteObject(cvRef)
-    .then(() => {
-      Notification({ text: "Currículo deletado!", type: "success" });
-    })
-    .catch((error) => {
+    if(employeeCv) {
+      const cvRef = ref(storage, `${employeeId}/${employeeCv}`);
+
+      deleteObject(cvRef)
+      .then(() => {
+        Notification({ text: "Currículo deletado!", type: "success" });
+      })
+      .catch((error) => {
+        dispatch(setLoading({loading: false}));
+        console.log(error);
+        Notification({ text: "Algo deu errado...", type: "error" });
+      });
+    }
+    else {
+      const cvRef = ref(storage, `${employeeId}`);
+
+      listAll(cvRef)
+      .then((listResults) => {
+        listResults.items.map((item) => {
+          deleteObject(item)
+          .then(() => {
+            
+          })
+          .catch((error) => {
+            dispatch(setLoading({loading: false}));
+            console.log(error);
+            Notification({ text: "Algo deu errado...", type: "error" });
+          });
+        });
+        
+        dispatch(setLoading({loading: false}));
+      })
+      .catch((error) => {
+        dispatch(setLoading({loading: false}));
+        console.log(error);
+        Notification({ text: "Algo deu errado...", type: "error" });
+      });
+    }
+  }
+
+  const handleEmployeeDelete = async (id, employeeId) => {
+    try {
+      handleCvDelete(employeeId);
+
+      await deleteDoc(doc(db, "employees", id));
+
+      window.location.reload();
+    } catch (error) {
       console.log(error);
+      dispatch(setLoading({loading: false}));
       Notification({ text: "Algo deu errado...", type: "error" });
-    });
+    }
   }
 
   return (
     <>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell component="th" scope="row">
-          {`${row.name} ${row.lastname}`}
+          <button className="clearButton deleteEmployee" onClick={() => handleEmployeeDelete(row.id, row.employeeId)}>
+            {`${row.name} ${row.lastname}`}
+          </button>
         </TableCell>
 
         <TableCell align="right">{row.email}</TableCell>
@@ -127,7 +181,7 @@ const Row = (props) => {
             className="clearButton"
             onClick={noCvFound ? () => navigate(`/employee/${row.employeeId}`) : () => handleDownloadCv(row.employeeId)}
           >
-            {noCvFound ? <PostAddIcon color='secondary'/> : <FilePresentIcon />}
+            {noCvFound ? <PostAddIcon color="secondary" titleAccess="Criar novo currículo" /> : <FilePresentIcon titleAccess="Baixar currículo" />}
           </button>
         </TableCell>
 
@@ -169,7 +223,7 @@ const Row = (props) => {
                             className="clearButton"
                             onClick={() => handleDownloadCv(row.employeeId, cv.name)}
                           >
-                            <FilePresentIcon sx={{ marginLeft: "15px" }}/>
+                            <FilePresentIcon sx={{ marginLeft: "15px" }} titleAccess="Baixar currículo" />
                           </button>
                         </TableCell>
 
@@ -179,14 +233,14 @@ const Row = (props) => {
                               className="clearButton"
                               onClick={() => navigate(`/employee/${row.employeeId}`)}
                             >
-                              <EditIcon color="primary"/>
+                              <EditIcon color="primary" titleAccess="Editar última alteração" />
                             </button>
 
                             <button
                               className="clearButton"
                               onClick={() => handleCvDelete(row.employeeId, cv.name)}
                             >
-                              <DeleteForeverIcon htmlColor="#F44336" />
+                              <DeleteForeverIcon htmlColor="#F44336" titleAccess="Excluir currículo" />
                             </button>
                           </div>
                         </TableCell>

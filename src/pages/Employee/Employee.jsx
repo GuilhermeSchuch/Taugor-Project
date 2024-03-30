@@ -24,7 +24,10 @@ import { useState, useEffect } from "react";
 import Notification from "../../components/Notification/Notification";
 
 // Components
-import Header from "../../components/Header/Header";
+import {
+  Header,
+  Loading
+} from "../../components";
 
 // Firebase
 import { db, storage } from "../../config/firebase";
@@ -32,7 +35,11 @@ import { collection, addDoc, getDocs, query, where, setDoc, doc, updateDoc } fro
 import { ref, uploadBytes } from "firebase/storage";
 
 // Router
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+
+// Redux
+import { useSelector, useDispatch } from "react-redux";
+import { setLoading } from '../../features/loadingSlice';
 
 // uuid
 import { v4 } from "uuid";
@@ -45,6 +52,10 @@ var _ = require('lodash');
 
 const Employee = () => {
   const { id } = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { loading } = useSelector((state) => state.loading);
 
   const employeesCollectionRef = collection(db, "employees");
   
@@ -90,6 +101,8 @@ const Employee = () => {
   useEffect(() => {
     const getEmployee = async () => {
       if(id) {
+        dispatch(setLoading({loading: true}));
+
         const q = query(
           collection(db, "employees"),
           where("employeeId", "==", id)
@@ -103,7 +116,10 @@ const Employee = () => {
           handleEmployee(e, filteredData);
           handleExperiences(e, filteredData);
           handleCourses(e, filteredData);
+
+          dispatch(setLoading({loading: false}));
         } catch (error) {
+          dispatch(setLoading({loading: false}));
           console.log(error);
           Notification({ text: "Algo deu errado...", type: "error" });
         }
@@ -113,8 +129,6 @@ const Employee = () => {
     getEmployee();
   }, [])
 
-  console.log(employee);
-
   const handleEmployee = (e, employeeData) => {
     if(employeeData) {
       setEmployee({ ...employeeData });
@@ -122,6 +136,10 @@ const Employee = () => {
     else {
       setEmployee({ ...employee, [e.target.name]: e.target.value });
     }
+  }
+
+  const handleSex = (e) => {
+    setEmployee({ ...employee, sex: e.target.value });
   }
 
   const handleExperience = (e) => {
@@ -181,10 +199,6 @@ const Employee = () => {
     setCourses(courses.filter((course) => course.id != id));
   }
 
-  const handleSex = (e) => {
-    
-  }
-
   const generatePDF = async (data) => {
     try {
       const response = await axios.post(
@@ -211,12 +225,9 @@ const Employee = () => {
 
   const createEmployee = async () => {
     try {
-      if(id) {
-        const q = query(
-          collection(db, "employees"),
-          where("employeeId", "==", id)
-        );
+      dispatch(setLoading({loading: true}));
 
+      if(id) {
         await updateDoc(doc(db, "employees", employee.id), {
           about: employee.about,
           address: employee.address,
@@ -267,7 +278,11 @@ const Employee = () => {
       }
 
       generatePDF({...employee, experiences, education: courses});
+
+      navigate("/");
+      
     } catch (error) {
+      dispatch(setLoading({loading: false}));
       console.log(error);
       Notification({ text: "Algo deu errado, tente novamente", type: "error" });
     }
@@ -275,6 +290,8 @@ const Employee = () => {
 
   return (
     <>
+      {loading && <Loading isLoading={loading} />}
+
       <Header counter={stepCounter} />
 
       <div className="authContainer">
@@ -383,15 +400,6 @@ const Employee = () => {
                   >
                     <MenuItem value={"Masculino"}>Masculino</MenuItem>
                     <MenuItem value={"Feminino"}>Feminino</MenuItem>
-                    
-
-                    <TextField
-                      id="otherSex"
-                      name="sex"
-                      label="Outro"
-                      value={employee.sex}
-                      onChange={handleSex}
-                    />
                   </Select>
                   
                 </FormControl>
