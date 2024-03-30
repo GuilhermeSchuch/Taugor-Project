@@ -129,6 +129,9 @@ const Employee = () => {
     getEmployee();
   }, [])
 
+  const languageRegex = /^[\w\sáéíóúÁÉÍÓÚãẽĩõũÃẼĨÕŨâêîôûÂÊÎÔÛàèìòùÀÈÌÒÙçÇ\-]+ - (Básico|Intermediário|Avançado|Nativo),?\s?/;
+  const skillsRegex = /^[a-zA-Z\s,]+$/;
+
   const handleEmployee = (e, employeeData) => {
     if(employeeData) {
       setEmployee({ ...employeeData });
@@ -223,9 +226,40 @@ const Employee = () => {
     }
   };
 
+  const handleInputValidationError = (text) => {
+    Notification({ text, type: "error" });
+    dispatch(setLoading({loading: false}));
+  }
+
   const createEmployee = async () => {
     try {
       dispatch(setLoading({loading: true}));
+
+      // Input Validations
+      if(!languageRegex.test(employee.languages)) {
+        handleInputValidationError("Norma de escrita não seguida no campo 'Idiomas'!");
+        return false;
+      }
+
+      if(!skillsRegex.test(employee.skills)) {
+        handleInputValidationError("Norma de escrita não seguida no campo 'Habilidades'!");
+        return false;
+      }
+
+      if(employee.name === '') {
+        handleInputValidationError("Campo 'Nome' é obrigatório!");
+        return false;
+      }
+
+      if(employee.lastname === '') {
+        handleInputValidationError("Campo 'Sobrenome' é obrigatório!");
+        return false;
+      }
+
+      if(employee.job === '' || employee.dateAdmission === '' || employee.sector === '' || employee.salary === '') {
+        handleInputValidationError("Todos os campos de Informação do Funcionário são obrigatórios!");
+        return false;
+      }
 
       if(id) {
         await updateDoc(doc(db, "employees", employee.id), {
