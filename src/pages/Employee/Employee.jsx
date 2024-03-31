@@ -63,6 +63,7 @@ const Employee = () => {
     employeeId: v4(),
     name: '',
     lastname: '',
+    image: '',
     job: '',
     address: '',
     email: '',
@@ -81,6 +82,10 @@ const Employee = () => {
   })
 
   const [stepCounter, setStepCounter] = useState(1);
+  const [profilePic, setProfilePic] = useState({
+    src: '',
+    img: ''
+  });
 
   const [experiences, setExperiences] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -130,6 +135,7 @@ const Employee = () => {
   }, [])
 
   const languageRegex = /^[\w\sáéíóúÁÉÍÓÚãẽĩõũÃẼĨÕŨâêîôûÂÊÎÔÛàèìòùÀÈÌÒÙçÇ\-]+ - (Básico|Intermediário|Avançado|Nativo),?\s?/;
+  const birthDayRegex = /^(0?[1-9]|[12]\d|3[01]) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4}$/;
   const skillsRegex = /^[a-zA-Z\s,]+$/;
 
   const handleEmployee = (e, employeeData) => {
@@ -246,6 +252,11 @@ const Employee = () => {
         return false;
       }
 
+      if(!birthDayRegex.test(employee.birthday)) {
+        handleInputValidationError("Norma de escrita não seguida no campo 'Data de nascimento'!");
+        return false;
+      }
+
       if(employee.name === '') {
         handleInputValidationError("Campo 'Nome' é obrigatório!");
         return false;
@@ -256,7 +267,7 @@ const Employee = () => {
         return false;
       }
 
-      if(employee.job === '' || employee.dateAdmission === '' || employee.sector === '' || employee.salary === '') {
+      if(employee.position === '' || employee.dateAdmission === '' || employee.sector === '' || employee.salary === '') {
         handleInputValidationError("Todos os campos de Informação do Funcionário são obrigatórios!");
         return false;
       }
@@ -311,7 +322,8 @@ const Employee = () => {
         });
       }
 
-      generatePDF({...employee, experiences, education: courses});
+      console.log(profilePic);
+      generatePDF({...employee, experiences, education: courses, profilePic: profilePic.img});
 
       navigate("/");
       
@@ -321,6 +333,19 @@ const Employee = () => {
       Notification({ text: "Algo deu errado, tente novamente", type: "error" });
     }
   }
+
+  const handleProfilePic = (e) => {
+    const file = e.target.files[0];
+    const imageUrl = URL.createObjectURL(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProfilePic({src: imageUrl, img: reader.result});
+      Notification({ text: "Lembre-se de usar uma imagem em modo retraro para melhor qualidade!", type: "info" });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  console.log(profilePic);
 
   return (
     <>
@@ -361,18 +386,28 @@ const Employee = () => {
 
               <div className="firstSectionImgContainer">
                 <div className="pictureContainer">
-                  <div className="image"></div>
+                  <div
+                    className="image"
+                    style={profilePic.src ? {backgroundImage: `url(${profilePic.src})`} : {}}
+                  >
+                  </div>
                 </div>
 
                 <div className="pictureOptions">
                   <h3>Foto do Perfil</h3>
-                  <label htmlFor="imgUplaod" className="labelContainer">
+                  <label htmlFor="profilePic" className="labelContainer">
                     <ArrowCircleUpIcon fontSize="small" />
-                    <input type="file" name="imgUplaod" id="imgUplaod" />
+
+                    <input
+                      type="file"
+                      name="profilePic"
+                      id="profilePic"
+                      accept="image/*"
+                      onChange={handleProfilePic}
+                    />
+
                     <span>Adicionar Foto</span>
                   </label>
-
-                  <FormControlLabel control={<Switch />} label="Foto Redonda" />
                 </div>
               </div>
             </div>
@@ -454,7 +489,7 @@ const Employee = () => {
                   id="birthday"
                   name="birthday"
                   label="Data de Nascimento"
-                  helperText="ex: 23 jun 1985"
+                  helperText="ex: 23 Jun 1985"
                   value={employee.birthday}
                   onChange={handleEmployee}
                   sx={{ width: "223px" }}

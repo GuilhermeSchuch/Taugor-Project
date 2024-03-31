@@ -41,13 +41,13 @@ import Notification from '../Notification/Notification';
 
 // Firebase
 import { storage, db } from "../../config/firebase";
+import { doc, deleteDoc } from 'firebase/firestore';
 import {
   ref,
   listAll,
   getDownloadURL,
   deleteObject,
 } from "firebase/storage";
-import { doc, deleteDoc } from 'firebase/firestore';
 
 const Row = (props) => {
   const { row } = props;
@@ -114,7 +114,10 @@ const Row = (props) => {
 
       deleteObject(cvRef)
       .then(() => {
-        Notification({ text: "Currículo deletado!", type: "success" });
+        dispatch(setLoading({loading: false}));
+
+        window.location.reload();
+        // Notification({ text: "Currículo deletado!", type: "success" });
       })
       .catch((error) => {
         dispatch(setLoading({loading: false}));
@@ -149,13 +152,13 @@ const Row = (props) => {
     }
   }
 
-  const handleEmployeeDelete = async (id, employeeId) => {
+  const handleEmployeeDelete = (id, employeeId) => {
     try {
       handleCvDelete(employeeId);
 
-      await deleteDoc(doc(db, "employees", id));
-
-      window.location.reload();
+      deleteDoc(doc(db, "employees", id)).then(() => {
+        window.location.reload()
+      })
     } catch (error) {
       console.log(error);
       dispatch(setLoading({loading: false}));
@@ -213,7 +216,7 @@ const Row = (props) => {
                 <TableBody>
                   {employeeCvs.length > 0 ?
                     (employeeCvs?.map((cv) => (
-                      <TableRow key={cv.name}>
+                      <TableRow key={cv.name} className={cv.name}>
                         <TableCell component="th" scope="row">
                           {new Date(parseInt(cv.name)).toLocaleString("pt-BR")}
                         </TableCell>

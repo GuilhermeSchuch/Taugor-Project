@@ -85,7 +85,6 @@ const Auth = () => {
 
           <TextField
             id="email"
-            helperText="ex: tiago.souza@email.com"
             type="email"
             name="email"
             autoFocus
@@ -100,7 +99,6 @@ const Auth = () => {
 
           <TextField
             id="password"
-            helperText="ex: tiagoSouza123"
             type="password"
             name="password"
             value={user.password}
